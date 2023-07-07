@@ -3,6 +3,7 @@ package whu.edu.cn.controller.routing;
 import ch.hsr.geohash.GeoHash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 import whu.edu.cn.entity.routing.PGRouting;
 import whu.edu.cn.mapper.routing.AStarRoutingSeparateMapper;
 
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
+@ApiIgnore
 public class AStarRoutingController {
     @Autowired
     AStarRoutingSeparateMapper aStarRoutingSeparateMapper;

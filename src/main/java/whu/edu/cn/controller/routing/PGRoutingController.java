@@ -1,6 +1,10 @@
 package whu.edu.cn.controller.routing;
 
 import ch.hsr.geohash.GeoHash;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +22,7 @@ import static java.lang.Math.sqrt;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Api(tags = "最短路径规划管理接口")
 public class PGRoutingController {
     @Autowired
     PGRoutingMapper pgRoutingMapper;
@@ -28,6 +33,7 @@ public class PGRoutingController {
     @Autowired
     DisasterMapper disasterMapper;
 
+    @ApiOperation(value = "UI版获取最短路径规划结果", hidden = true)
     @GetMapping("/getpgrouting")
     public PGRouting get(Integer kind, double x1, double y1, double x2, double y2, double speed) {
         PGRouting pgRouting = new PGRouting();
@@ -89,6 +95,16 @@ public class PGRoutingController {
         return pgRouting;
     }
 
+    @ApiOperation("基于灾害事件，获取最短路径规划")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "kind", value = "最短路径规划类别", required = true),
+            @ApiImplicitParam(name = "x1", value = "起点经度", required = true),
+            @ApiImplicitParam(name = "y1", value = "起点纬度", required = true),
+            @ApiImplicitParam(name = "x2", value = "终点经度", required = true),
+            @ApiImplicitParam(name = "y2", value = "终点纬度", required = true),
+            @ApiImplicitParam(name = "speed", value = "行驶速度", required = true),
+            @ApiImplicitParam(name = "disasterid", value = "灾害ID", required = true)
+    })
     @GetMapping("/getroute")
     public PGRouting get(Integer kind, double x1, double y1, double x2, double y2, double speed, Integer disasterid) {
         List<Integer> integerList = pgRoutingMapper.getRouteID(11);
@@ -203,6 +219,7 @@ public class PGRoutingController {
         return pgRouting;
     }
 
+    @ApiOperation(value = "UI版更新权重", hidden = true)
     @PostMapping("/updateroutecost")
     public Object updateroutecost(Integer disasterid) {
         if (disasterid != 0) {
@@ -214,6 +231,7 @@ public class PGRoutingController {
         return "success";
     }
 
+    @ApiOperation(value = "UI版还原权重", hidden = true)
     @PostMapping("/updateroutecostorigin")
     public Object updateroutecostorigin(Integer disasterid) {
         if (disasterid != 0) {
@@ -225,6 +243,7 @@ public class PGRoutingController {
         return "success";
     }
 
+    @ApiOperation(value = "内部更新7位Geohash", hidden = true)
     @PostMapping("/updategeohash7")
     public Object update7() {
         int routeNum = lineMapper.getRouteNum();
@@ -237,6 +256,7 @@ public class PGRoutingController {
         return "success";
     }
 
+    @ApiOperation(value = "内部更新6位Geohash", hidden = true)
     @PostMapping("/updategeohash6")
     public Object update6() {
         int routeNum = lineMapper.getRouteNum();
@@ -249,6 +269,7 @@ public class PGRoutingController {
         return "success";
     }
 
+    @ApiOperation(value = "内部更新5位Geohash", hidden = true)
     @PostMapping("/updategeohash5")
     public Object update5() {
         int routeNum = lineMapper.getRouteNum();
@@ -261,6 +282,7 @@ public class PGRoutingController {
         return "success";
     }
 
+    @ApiOperation(value = "内部更新4位Geohash", hidden = true)
     @PostMapping("/updategeohash4")
     public Object update4() {
         int routeNum = lineMapper.getRouteNum();
@@ -273,6 +295,7 @@ public class PGRoutingController {
         return "success";
     }
 
+    @ApiOperation(value = "内部更新3位Geohash", hidden = true)
     @PostMapping("/updategeohash3")
     public Object update3() {
         int routeNum = lineMapper.getRouteNum();

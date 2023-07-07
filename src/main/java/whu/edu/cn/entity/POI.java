@@ -1,19 +1,32 @@
 package whu.edu.cn.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.auth.In;
 
+@ApiModel(description = "POI表的实体对象")
 @TableName(value = "poi", autoResultMap = true)
 public class POI {
+    @ApiModelProperty(value = "POI编号")
     private Integer gid;
+    @ApiModelProperty(value = "POI名称")
     private String name;
+    @ApiModelProperty(value = "POI地址")
     private String address;
+    @ApiModelProperty(value = "POI经度")
     private double lng;
+    @ApiModelProperty(value = "POI纬度")
     private double lat;
+    @ApiModelProperty(value = "POI分类")
     private String industryclass;
+    @ApiModelProperty(value = "POI子类")
     private String industrysubclass;
+    @ApiModelProperty(value = "POI几何")
     private String geom;
+    @ApiModelProperty(value = "POI的Geohash编码")
     private String geohash;
+    @ApiModelProperty(value = "POI类别编号")
     private Integer fclass;
 
     public Integer getGid() {

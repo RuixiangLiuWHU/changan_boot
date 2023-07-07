@@ -1,6 +1,7 @@
 package whu.edu.cn.controller;
 
 import ch.hsr.geohash.GeoHash;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,16 +15,19 @@ import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Api(tags = "POI管理接口")
 public class POIController {
     @Autowired
     POIMapper poiMapper;
 
+    @ApiOperation("按相似度排序最相似的POI名称")
+    @ApiImplicitParam(name = "str", value = "希望比较的POI名称", required = true)
     @GetMapping("/getlevenshteinpoi")
-    public List<String> getLevenshteinPOI(String str1) {
+    public List<String> getLevenshteinPOI(String str) {
         //计算两个字符串的长度。
         List<Levenshtein> levenshteinList = new ArrayList<>();
         Set<String> stringSet = new HashSet<>();
-        int len1 = str1.length();
+        int len1 = str.length();
         List<String> stringList = poiMapper.getPOIName();
         for (int le = 0; le < stringList.size(); le++) {
             String str2 = stringList.get(le);
@@ -41,7 +45,7 @@ public class POIController {
             int temp;
             for (int i = 1; i <= len1; i++) {
                 for (int j = 1; j <= len2; j++) {
-                    if (str1.charAt(i - 1) == str2.charAt(j - 1)) {
+                    if (str.charAt(i - 1) == str2.charAt(j - 1)) {
                         temp = 0;
                     } else {
                         temp = 1;
@@ -51,27 +55,34 @@ public class POIController {
                             dif[i - 1][j] + 1);
                 }
             }
-            double similarity = 1 - (double) dif[len1][len2] / Math.max(str1.length(), str2.length());
-            if(stringSet.add(str2)) {
+            double similarity = 1 - (double) dif[len1][len2] / Math.max(str.length(), str2.length());
+            if (stringSet.add(str2)) {
                 levenshteinList.add(new Levenshtein(str2, similarity));
             }
         }
         Collections.sort(levenshteinList);
         List<String> out = new ArrayList<>();
         for (int ii = 0; ii < 100; ii++) {
-            if(levenshteinList.get(levenshteinList.size()-1-ii).getSimilarity()>0) {
+            if (levenshteinList.get(levenshteinList.size() - 1 - ii).getSimilarity() > 0) {
                 out.add(levenshteinList.get(levenshteinList.size() - 1 - ii).getName());
             }
         }
         return out;
     }
 
+    @ApiOperation("通过名称获取POI")
+    @ApiImplicitParam(name = "name", value = "POI名称", required = true)
     @GetMapping("/getpoibyname")
-    POI getpoibyname(String name){
+    POI getpoibyname(String name) {
         POI poi = poiMapper.getPOIByName(name);
         return poi;
     }
 
+    @ApiOperation("获取受影响的POI")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pois", value = "POI种类", required = true),
+            @ApiImplicitParam(name = "disasterid", value = "灾害ID", required = true)
+    })
     @GetMapping("/getpoiaffected")
     public List<POI> getpoiaffected(Integer[] pois, Integer disasterid) {
         List<POI> poiList = new ArrayList<>();
@@ -82,33 +93,35 @@ public class POIController {
         }
         return poiList;
     }
-    @PostMapping ("/processpoi")
+
+    @ApiOperation(value = "内部处理POI", hidden = true)
+    @PostMapping("/processpoi")
     public Object processpoi(Integer[] pois) {
         poiMapper.clearPOIAffected0720();
         poiMapper.clearPOIAffected0722();
-        Integer num0720=1;
-        Integer num0722=1;
+        Integer num0720 = 1;
+        Integer num0722 = 1;
         Integer selectPOINum = poiMapper.getSelectPOINum(pois);
         List<POI> poiList = poiMapper.getSelectPOI(pois);
         for (int i = 0; i < selectPOINum; i++) {
             String geohash = poiList.get(i).getGeohash();
             List<String> stringList0720 = poiMapper.getPOIFlood0720(geohash);
             List<String> stringList0722 = poiMapper.getPOIFlood0722(geohash);
-            for(int j=0;j<stringList0720.size();j++){
-                if(poiMapper.getIntersects(stringList0720.get(j),poiList.get(i).getGeom())){
-                    poiMapper.insertPOIAffected0720(num0720,poiList.get(i).getName(),poiList.get(i).getAddress(),
-                            poiList.get(i).getLng(),poiList.get(i).getLat(),poiList.get(i).getIndustryclass(),
-                            poiList.get(i).getIndustrysubclass(),poiList.get(i).getGeom(),poiList.get(i).getGeohash(),
+            for (int j = 0; j < stringList0720.size(); j++) {
+                if (poiMapper.getIntersects(stringList0720.get(j), poiList.get(i).getGeom())) {
+                    poiMapper.insertPOIAffected0720(num0720, poiList.get(i).getName(), poiList.get(i).getAddress(),
+                            poiList.get(i).getLng(), poiList.get(i).getLat(), poiList.get(i).getIndustryclass(),
+                            poiList.get(i).getIndustrysubclass(), poiList.get(i).getGeom(), poiList.get(i).getGeohash(),
                             poiList.get(i).getFclass());
                     num0720++;
                     break;
                 }
             }
-            for(int j=0;j<stringList0722.size();j++){
-                if(poiMapper.getIntersects(stringList0722.get(j),poiList.get(i).getGeom())){
-                    poiMapper.insertPOIAffected0722(num0722,poiList.get(i).getName(),poiList.get(i).getAddress(),
-                            poiList.get(i).getLng(),poiList.get(i).getLat(),poiList.get(i).getIndustryclass(),
-                            poiList.get(i).getIndustrysubclass(),poiList.get(i).getGeom(),poiList.get(i).getGeohash(),
+            for (int j = 0; j < stringList0722.size(); j++) {
+                if (poiMapper.getIntersects(stringList0722.get(j), poiList.get(i).getGeom())) {
+                    poiMapper.insertPOIAffected0722(num0722, poiList.get(i).getName(), poiList.get(i).getAddress(),
+                            poiList.get(i).getLng(), poiList.get(i).getLat(), poiList.get(i).getIndustryclass(),
+                            poiList.get(i).getIndustrysubclass(), poiList.get(i).getGeom(), poiList.get(i).getGeohash(),
                             poiList.get(i).getFclass());
                     num0722++;
                     break;
@@ -118,6 +131,7 @@ public class POIController {
         return "success";
     }
 
+    @ApiOperation(value = "内部插入POI", hidden = true)
     @PostMapping("/insertpoi")
     public Object insert() {
         for (int i = 1; i <= poiMapper.getEduPOINum(); i++) {

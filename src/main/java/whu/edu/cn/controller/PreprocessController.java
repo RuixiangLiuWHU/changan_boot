@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 import whu.edu.cn.entity.Preprocess;
 import whu.edu.cn.mapper.PreprocessMapper;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
+@ApiIgnore
 public class PreprocessController {
     @Autowired
     PreprocessMapper preprocessMapper;

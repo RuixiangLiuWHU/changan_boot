@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 import whu.edu.cn.entity.TreeData;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
+@ApiIgnore
 public class TreeDataController {
     @GetMapping("/inittreedata")
     public Object inittreedata() {

@@ -1,5 +1,9 @@
 package whu.edu.cn.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +19,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Api(tags = "基于文本的点事件和线事件管理接口")
 public class TextEventController {
     @Autowired
     TextEventMapper textEventMapper;
@@ -25,6 +30,14 @@ public class TextEventController {
     @Autowired
     LineMapper lineMapper;
 
+    @ApiOperation("通过文本插入点事件")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "disasterid", value = "灾害ID", required = true),
+            @ApiImplicitParam(name = "routename", value = "道路名称", required = true),
+            @ApiImplicitParam(name = "poiname", value = "POI名称", required = true),
+            @ApiImplicitParam(name = "direction", value = "方向", required = true),
+            @ApiImplicitParam(name = "distance", value = "距离", required = true)
+    })
     @PostMapping("/insertpointbytext")
     String insertPointByText(Integer disasterid, String routename, String poiname, Integer direction, double distance) {
         String returnstring = new String();
@@ -277,7 +290,15 @@ public class TextEventController {
         return returnstring;
     }
 
-
+    @ApiOperation("通过文本插入线事件")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "disasterid", value = "灾害ID", required = true),
+            @ApiImplicitParam(name = "routename", value = "道路名称", required = true),
+            @ApiImplicitParam(name = "poiname", value = "POI名称", required = true),
+            @ApiImplicitParam(name = "direction", value = "方向", required = true),
+            @ApiImplicitParam(name = "startdistance", value = "起始距离", required = true),
+            @ApiImplicitParam(name = "enddistance", value = "终止距离", required = true)
+    })
     @PostMapping("/insertlinebytext")
     List<String> insertLineByText(Integer disasterid, String routename, String poiname, Integer direction, double startdistance, double enddistance) {
         List<String> routePass = new ArrayList<>();

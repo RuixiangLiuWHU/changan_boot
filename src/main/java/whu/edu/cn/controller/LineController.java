@@ -1,5 +1,9 @@
 package whu.edu.cn.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import whu.edu.cn.entity.Levenshtein;
@@ -11,15 +15,28 @@ import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Api(tags = "线事件管理接口")
 public class LineController {
     @Autowired
     LineMapper lineMapper;
 
-    @RequestMapping("/getlineeventrouteid")
+    @ApiOperation("通过坐标获取距离最近的线事件")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "x", value = "X坐标", required = true),
+            @ApiImplicitParam(name = "y", value = "Y坐标", required = true)
+    })
+    @GetMapping("/getlineeventrouteid")
     public Route getlineeventrouteid(double x, double y) {
         return lineMapper.getNearestRouteId(x, y);
     }
 
+    @ApiOperation("插入线事件")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "pointWKTStart", value = "起点坐标（WKT）", required = true),
+            @ApiImplicitParam(name = "pointWKTEnd", value = "终点坐标（WKT）", required = true),
+            @ApiImplicitParam(name = "disasterid", value = "灾害ID", required = true),
+            @ApiImplicitParam(name = "routeid", value = "道路ID", required = true)
+    })
     @PostMapping("/insertline")
     public Object insert(String pointWKTStart, String pointWKTEnd, Integer disasterid, Integer routeid) {
         String routegeom = lineMapper.getRouteGeom(routeid);
@@ -35,12 +52,14 @@ public class LineController {
         return "success";
     }
 
+    @ApiOperation("按相似度排序最相似的道路名称")
+    @ApiImplicitParam(name = "str", value = "希望比较的道路名称", required = true)
     @GetMapping("/getlevenshtein")
-    public List<String> getLevenshtein(String str1) {
+    public List<String> getLevenshtein(String str) {
         //计算两个字符串的长度。
         List<Levenshtein> levenshteinList = new ArrayList<>();
         Set<String> stringSet = new HashSet<>();
-        int len1 = str1.length();
+        int len1 = str.length();
         List<String> stringList = lineMapper.getRouteName();
         for (int le = 0; le < stringList.size(); le++) {
             String str2 = stringList.get(le);
@@ -58,7 +77,7 @@ public class LineController {
             int temp;
             for (int i = 1; i <= len1; i++) {
                 for (int j = 1; j <= len2; j++) {
-                    if (str1.charAt(i - 1) == str2.charAt(j - 1)) {
+                    if (str.charAt(i - 1) == str2.charAt(j - 1)) {
                         temp = 0;
                     } else {
                         temp = 1;
@@ -68,7 +87,7 @@ public class LineController {
                             dif[i - 1][j] + 1);
                 }
             }
-            double similarity = 1 - (double) dif[len1][len2] / Math.max(str1.length(), str2.length());
+            double similarity = 1 - (double) dif[len1][len2] / Math.max(str.length(), str2.length());
             if(stringSet.add(str2)) {
                 levenshteinList.add(new Levenshtein(str2, similarity));
             }
@@ -82,6 +101,9 @@ public class LineController {
         }
         return out;
     }
+
+    @ApiOperation("通过名称获取道路")
+    @ApiImplicitParam(name = "name", value = "道路名称", required = true)
     @GetMapping("/getroutebyname")
     List<Route> getroutebyname(String name){
         List<Route> routeList = lineMapper.getRouteByName(name);

@@ -4,17 +4,24 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.postgis.Point;
 import whu.edu.cn.typehandler.PointTypeHandler;
 
-
+@ApiModel(description = "点事件的实体对象")
 @TableName(value = "point", autoResultMap = true)
 public class PointEvent {
     @TableId(value = "id", type = IdType.AUTO)
+    @ApiModelProperty(value = "点事件编号")
     private Integer id;
+    @ApiModelProperty(value = "点事件测量值")
     private double m;
+    @ApiModelProperty(value = "点事件几何")
     private String geom;
+    @ApiModelProperty(value = "点事件所在的灾害编号")
     private Integer disasterid;
+    @ApiModelProperty(value = "点事件所在的道路编号")
     private Integer routeid;
 
     public Integer getId() {

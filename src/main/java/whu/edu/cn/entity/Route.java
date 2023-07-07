@@ -1,28 +1,51 @@
 package whu.edu.cn.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(description = "道路表的实体对象")
 @TableName(value = "ways", autoResultMap = true)
 public class Route {
+    @ApiModelProperty(value = "道路编号")
     private Integer gid;
+    @ApiModelProperty(value = "道路名称")
     private String name;
+    @ApiModelProperty(value = "道路起点编号")
     private Integer source;
+    @ApiModelProperty(value = "道路终点编号")
     private Integer target;
+    @ApiModelProperty(value = "道路正向权重")
     private double cost;
+    @ApiModelProperty(value = "道路反向权重")
     private double reverse_cost;
+    @ApiModelProperty(value = "道路起点经度")
     private double x1;
+    @ApiModelProperty(value = "道路起点纬度")
     private double y1;
+    @ApiModelProperty(value = "道路终点经度")
     private double x2;
+    @ApiModelProperty(value = "道路终点纬度")
     private double y2;
+    @ApiModelProperty(value = "道路正向限速速度")
     private double maxspeed_forward;
+    @ApiModelProperty(value = "道路反向限速速度")
     private double maxspeed_backward;
+    @ApiModelProperty(value = "道路优先级权重")
     private double priority;
+    @ApiModelProperty(value = "道路几何")
     private String geom;
+    @ApiModelProperty(value = "道路7位Geohash编码")
     private String geohash7;
+    @ApiModelProperty(value = "道路6位Geohash编码")
     private String geohash6;
+    @ApiModelProperty(value = "道路5位Geohash编码")
     private String geohash5;
+    @ApiModelProperty(value = "道路4位Geohash编码")
     private String geohash4;
+    @ApiModelProperty(value = "道路3位Geohash编码")
     private String geohash3;
+    @ApiModelProperty(value = "道路所有位数的Geohash编码")
     private String[] geohash;
 
     public Integer getGid() {
