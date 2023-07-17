@@ -18,3 +18,8 @@ spring:
         show_sql: true
         format_sql: true
         ddl-auto: update #框架会自动帮我们创建或更新表结构
+  neo4j:
+    uri: bolt://125.220.153.22:7687
+    authentication:
+      username: neo4j
+      password: neo4jj

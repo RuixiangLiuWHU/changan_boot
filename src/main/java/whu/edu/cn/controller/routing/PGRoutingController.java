@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 import whu.edu.cn.entity.Route;
 import whu.edu.cn.entity.routing.PGRouting;
 import whu.edu.cn.mapper.DisasterMapper;
@@ -22,7 +23,7 @@ import static java.lang.Math.sqrt;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@Api(tags = "最短路径规划管理接口")
+@ApiIgnore
 public class PGRoutingController {
     @Autowired
     PGRoutingMapper pgRoutingMapper;
@@ -95,7 +96,7 @@ public class PGRoutingController {
         return pgRouting;
     }
 
-    @ApiOperation("基于灾害事件，获取最短路径规划")
+    @ApiOperation(value = "基于灾害事件，获取最短路径规划", hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "kind", value = "最短路径规划类别", required = true),
             @ApiImplicitParam(name = "x1", value = "起点经度", required = true),
@@ -105,12 +106,8 @@ public class PGRoutingController {
             @ApiImplicitParam(name = "speed", value = "行驶速度", required = true),
             @ApiImplicitParam(name = "disasterid", value = "灾害ID", required = true)
     })
-    @GetMapping("/getroute")
+    @GetMapping("/getrouteold")
     public PGRouting get(Integer kind, double x1, double y1, double x2, double y2, double speed, Integer disasterid) {
-        List<Integer> integerList = pgRoutingMapper.getRouteID(11);
-        for (int i = 0; i < integerList.size(); i++) {
-            pgRoutingMapper.updatecostorigin(integerList.get(i));
-        }
         if (disasterid != 0) {
             List<Integer> integerList2 = pgRoutingMapper.getRouteID(disasterid);
             for (int i = 0; i < integerList2.size(); i++) {
@@ -214,6 +211,11 @@ public class PGRoutingController {
             endGeom = endGeom.replace("LINESTRING(", ",");
             pgRouting.setGeom(pgRouting.getGeom().replace(")", endGeom));
             System.out.println("11");
+        }
+
+        List<Integer> integerList = pgRoutingMapper.getRouteID(disasterid);
+        for (int i = 0; i < integerList.size(); i++) {
+            pgRoutingMapper.updatecostorigin(integerList.get(i));
         }
 
         return pgRouting;
