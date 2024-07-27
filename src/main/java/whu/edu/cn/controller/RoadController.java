@@ -26,6 +26,20 @@ public class RoadController {
         return routes;
     }
 
+    @ApiOperation("通过名称获取道路")
+    @GetMapping("/getroadsbyname")
+    public Object getRoadsByName(String name) {
+        List<Route> routes = roadMapper.getRoadsByName(name);
+        return routes;
+    }
+
+    @ApiOperation("通过范围获取道路")
+    @GetMapping("/getroadsbyextent")
+    public Object getRoadsByExtent(double x1, double x2, double y1, double y2) {
+        List<Route> routes = roadMapper.getRoadsByExtent(x1, x2, y1, y2);
+        return routes;
+    }
+
     @ApiOperation("获取所有的道路节点")
     @GetMapping("/getallvertices")
     public Object getAllVertices() {
